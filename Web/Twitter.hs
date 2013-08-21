@@ -191,7 +191,7 @@ makeJSON = decode . L8.unpack . rspPayload
 
 buildRequest ::  Method -> String -> [(String, String)] -> Request
 buildRequest meth part query =
-    (fromJust . parseURL $ "https://api.twitter.com/1/" ++ part ++ ".json") { method = meth, qString = fromList query}
+    (fromJust . parseURL $ "https://api.twitter.com/1.1/" ++ part ++ ".json") { method = meth, qString = fromList query}
    -- note the call to parseURL returns a Maybe Request (created using the ReqHttp constructor)
 
 doRequest :: Method -> String -> [(String, String)] -> OAuthMonadT IO Response

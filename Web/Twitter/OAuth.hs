@@ -11,6 +11,7 @@ module Web.Twitter.OAuth
        , makeToken
        , Consumer(..)
        , authenticate
+       , singleAccessToken
        , writeToken
        , readToken
        ) where
@@ -61,6 +62,16 @@ authenticate consumer = runOAuthM (fromApplication $ Application (key consumer) 
     url <- getAuthenticateURL consumer
     liftIO . putStr $ "open " ++ url ++ "\nverifier: "
     makeToken =<< liftIO getLine
+
+singleAccessToken :: Consumer -> String -> String -> IO Token
+singleAccessToken consumer accToken accSecret = runOAuthM (fromApplication app) $ do
+    let newToken = [("oauth_token", accToken)
+                   ,("oauth_token_secret", accSecret)]
+    ignite app
+    token <- getToken
+    return $ AccessToken app (fromList newToken `union` oauthParams token)
+  where
+    app = Application (key consumer) (secret consumer) OOB
 
 writeToken :: Token -> FilePath -> IO ()
 writeToken token path = L.writeFile path (encode token)
